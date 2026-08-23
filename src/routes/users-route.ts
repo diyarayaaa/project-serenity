@@ -36,7 +36,11 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
     }
 
     set.status = 500;
-    return { error: error.message || "Internal Server Error" };
+    const errorMessage =
+      "message" in error && typeof error.message === "string"
+        ? error.message
+        : "Internal Server Error";
+    return { error: errorMessage };
   })
   .post(
     "/",
