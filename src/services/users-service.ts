@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../db";
 import { users } from "../db/schema/users";
 import { sessions } from "../db/schema/sessions";
+import { BadRequestError, UnauthorizedError } from "../errors";
 
 export interface RegisterUserDTO {
   name: string;
@@ -26,7 +27,7 @@ export class UsersService {
       .limit(1);
 
     if (existingUser.length > 0) {
-      throw new Error("Email sudah terdaftar");
+      throw new BadRequestError("Email sudah terdaftar");
     }
 
     // 2. Hash password menggunakan bcrypt bawaan Bun
@@ -57,13 +58,13 @@ export class UsersService {
       .limit(1);
 
     if (!user) {
-      throw new Error("Email atau password salah");
+      throw new BadRequestError("Email atau password salah");
     }
 
     // 2. Verifikasi password dengan bcrypt
     const isPasswordValid = await Bun.password.verify(password, user.password);
     if (!isPasswordValid) {
-      throw new Error("Email atau password salah");
+      throw new BadRequestError("Email atau password salah");
     }
 
     // 3. Generate token UUID baru
@@ -94,7 +95,7 @@ export class UsersService {
       .limit(1);
 
     if (!result) {
-      throw new Error("Unauthorized");
+      throw new UnauthorizedError("Unauthorized");
     }
 
     return {
@@ -106,6 +107,17 @@ export class UsersService {
       },
     };
   }
+
+  static async logout(token: string) {
+    // Single-query delete dan cek affectedRows
+    const [result] = await db
+      .delete(sessions)
+      .where(eq(sessions.token, token));
+
+    if (result.affectedRows === 0) {
+      throw new UnauthorizedError("Unauthorized");
+    }
+
+    return { data: "OK" };
+  }
 }
-
-
