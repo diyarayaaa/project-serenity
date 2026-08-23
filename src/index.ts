@@ -4,7 +4,7 @@ import { swagger } from "@elysiajs/swagger";
 import { routes } from "./routes";
 import { env } from "./config/env";
 
-const app = new Elysia()
+export const app = new Elysia()
   .use(cors())
   .use(
     swagger({
