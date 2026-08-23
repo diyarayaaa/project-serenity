@@ -78,5 +78,34 @@ export class UsersService {
     // 5. Kembalikan token
     return { data: token };
   }
+
+  static async getCurrentUser(token: string) {
+    // Cari session dan join ke users
+    const [result] = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        createdAt: users.createdAt,
+      })
+      .from(sessions)
+      .innerJoin(users, eq(sessions.userId, users.id))
+      .where(eq(sessions.token, token))
+      .limit(1);
+
+    if (!result) {
+      throw new Error("Unauthorized");
+    }
+
+    return {
+      data: {
+        id: result.id,
+        name: result.name,
+        email: result.email,
+        created_at: result.createdAt,
+      },
+    };
+  }
 }
+
 
