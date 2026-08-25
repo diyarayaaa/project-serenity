@@ -77,6 +77,17 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
           500: { description: "Internal server error" },
         },
       },
+      response: {
+        200: t.Object({
+          data: t.String({ examples: ["OK"] }),
+        }),
+        400: t.Object({
+          error: t.String({ examples: ["Email sudah terdaftar"] }),
+        }),
+        500: t.Object({
+          error: t.String({ examples: ["Internal Server Error"] }),
+        }),
+      },
     }
   )
   .post(
@@ -108,6 +119,17 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
           500: { description: "Internal server error" },
         },
       },
+      response: {
+        200: t.Object({
+          data: t.String({ examples: ["550e8400-e29b-41d4-a716-446655440000"] }),
+        }),
+        400: t.Object({
+          error: t.String({ examples: ["Email atau password salah"] }),
+        }),
+        500: t.Object({
+          error: t.String({ examples: ["Internal Server Error"] }),
+        }),
+      },
     }
   )
   .get(
@@ -137,6 +159,22 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
           500: { description: "Internal server error" },
         },
       },
+      response: {
+        200: t.Object({
+          data: t.Object({
+            id: t.Number({ examples: [1] }),
+            name: t.String({ examples: ["Serenity User"] }),
+            email: t.String({ examples: ["user@example.com"] }),
+            created_at: t.String({ examples: ["2026-08-25T09:00:00.000Z"] }),
+          }),
+        }),
+        401: t.Object({
+          error: t.String({ examples: ["Unauthorized"] }),
+        }),
+        500: t.Object({
+          error: t.String({ examples: ["Internal Server Error"] }),
+        }),
+      },
     }
   )
   .delete(
@@ -162,6 +200,17 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
           401: { description: "Unauthorized - Token tidak valid" },
           500: { description: "Internal server error" },
         },
+      },
+      response: {
+        200: t.Object({
+          data: t.String({ examples: ["OK"] }),
+        }),
+        401: t.Object({
+          error: t.String({ examples: ["Unauthorized"] }),
+        }),
+        500: t.Object({
+          error: t.String({ examples: ["Internal Server Error"] }),
+        }),
       },
     }
   );
