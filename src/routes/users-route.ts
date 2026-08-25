@@ -165,7 +165,7 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
             id: t.Number({ examples: [1] }),
             name: t.String({ examples: ["Serenity User"] }),
             email: t.String({ examples: ["user@example.com"] }),
-            created_at: t.String({ examples: ["2026-08-25T09:00:00.000Z"] }),
+            created_at: t.Date({ examples: ["2026-08-25T09:00:00.000Z"] }),
           }),
         }),
         401: t.Object({
