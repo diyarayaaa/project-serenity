@@ -67,10 +67,15 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
         }),
       }),
       detail: {
-        tags: ["Users"],
+        tags: ["Authentication & Users"],
         summary: "Registrasi User Baru",
         description:
-          "Mendaftarkan user baru ke dalam sistem dengan enkripsi bcrypt",
+          "Mendaftarkan akun pengguna baru ke dalam sistem dengan password yang dienkripsi menggunakan Bcrypt.",
+        responses: {
+          200: { description: "User berhasil didaftarkan" },
+          400: { description: "Validasi gagal atau email sudah terdaftar" },
+          500: { description: "Internal server error" },
+        },
       },
     }
   )
@@ -91,10 +96,17 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
         password: t.String({ minLength: 1, error: "Password wajib diisi" }),
       }),
       detail: {
-        tags: ["Users"],
+        tags: ["Authentication & Users"],
         summary: "Login User",
         description:
-          "Autentikasi user dengan email & password, menghasilkan session token UUID",
+          "Mengautentikasi pengguna menggunakan email dan password, menghasilkan session token unik berupa UUID.",
+        responses: {
+          200: { description: "Login berhasil, mengembalikan session token" },
+          400: {
+            description: "Email atau password salah / format tidak valid",
+          },
+          500: { description: "Internal server error" },
+        },
       },
     }
   )
@@ -111,10 +123,19 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
         authorization: t.Optional(t.String()),
       }),
       detail: {
-        tags: ["Users"],
-        summary: "Get Current User",
+        tags: ["Authentication & Users"],
+        summary: "Get Current User Profile",
         description:
-          "Mengambil data profil user yang sedang login berdasarkan Bearer token session",
+          "Mengambil data profil pengguna yang saat ini sedang login berdasarkan token Bearer session.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: "Data profil user berhasil diambil" },
+          401: {
+            description:
+              "Unauthorized - Token tidak valid atau tidak disertakan",
+          },
+          500: { description: "Internal server error" },
+        },
       },
     }
   )
@@ -131,10 +152,16 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
         authorization: t.Optional(t.String()),
       }),
       detail: {
-        tags: ["Users"],
+        tags: ["Authentication & Users"],
         summary: "Logout User",
         description:
-          "Menghapus session token dari database untuk mengakhiri sesi user",
+          "Mengakhiri sesi pengguna dengan menghapus record token session dari database.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: "Logout berhasil dan session dihapus" },
+          401: { description: "Unauthorized - Token tidak valid" },
+          500: { description: "Internal server error" },
+        },
       },
     }
   );
