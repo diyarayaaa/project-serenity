@@ -67,10 +67,26 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
         }),
       }),
       detail: {
-        tags: ["Users"],
+        tags: ["Authentication & Users"],
         summary: "Registrasi User Baru",
         description:
-          "Mendaftarkan user baru ke dalam sistem dengan enkripsi bcrypt",
+          "Mendaftarkan akun pengguna baru ke dalam sistem dengan password yang dienkripsi menggunakan Bcrypt.",
+        responses: {
+          200: { description: "User berhasil didaftarkan" },
+          400: { description: "Validasi gagal atau email sudah terdaftar" },
+          500: { description: "Internal server error" },
+        },
+      },
+      response: {
+        200: t.Object({
+          data: t.String({ examples: ["OK"] }),
+        }),
+        400: t.Object({
+          error: t.String({ examples: ["Email sudah terdaftar"] }),
+        }),
+        500: t.Object({
+          error: t.String({ examples: ["Internal Server Error"] }),
+        }),
       },
     }
   )
@@ -91,10 +107,28 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
         password: t.String({ minLength: 1, error: "Password wajib diisi" }),
       }),
       detail: {
-        tags: ["Users"],
+        tags: ["Authentication & Users"],
         summary: "Login User",
         description:
-          "Autentikasi user dengan email & password, menghasilkan session token UUID",
+          "Mengautentikasi pengguna menggunakan email dan password, menghasilkan session token unik berupa UUID.",
+        responses: {
+          200: { description: "Login berhasil, mengembalikan session token" },
+          400: {
+            description: "Email atau password salah / format tidak valid",
+          },
+          500: { description: "Internal server error" },
+        },
+      },
+      response: {
+        200: t.Object({
+          data: t.String({ examples: ["550e8400-e29b-41d4-a716-446655440000"] }),
+        }),
+        400: t.Object({
+          error: t.String({ examples: ["Email atau password salah"] }),
+        }),
+        500: t.Object({
+          error: t.String({ examples: ["Internal Server Error"] }),
+        }),
       },
     }
   )
@@ -111,10 +145,35 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
         authorization: t.Optional(t.String()),
       }),
       detail: {
-        tags: ["Users"],
-        summary: "Get Current User",
+        tags: ["Authentication & Users"],
+        summary: "Get Current User Profile",
         description:
-          "Mengambil data profil user yang sedang login berdasarkan Bearer token session",
+          "Mengambil data profil pengguna yang saat ini sedang login berdasarkan token Bearer session.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: "Data profil user berhasil diambil" },
+          401: {
+            description:
+              "Unauthorized - Token tidak valid atau tidak disertakan",
+          },
+          500: { description: "Internal server error" },
+        },
+      },
+      response: {
+        200: t.Object({
+          data: t.Object({
+            id: t.Number({ examples: [1] }),
+            name: t.String({ examples: ["Serenity User"] }),
+            email: t.String({ examples: ["user@example.com"] }),
+            created_at: t.String({ examples: ["2026-08-25T09:00:00.000Z"] }),
+          }),
+        }),
+        401: t.Object({
+          error: t.String({ examples: ["Unauthorized"] }),
+        }),
+        500: t.Object({
+          error: t.String({ examples: ["Internal Server Error"] }),
+        }),
       },
     }
   )
@@ -131,10 +190,27 @@ export const usersRoute = new Elysia({ prefix: "/api/users" })
         authorization: t.Optional(t.String()),
       }),
       detail: {
-        tags: ["Users"],
+        tags: ["Authentication & Users"],
         summary: "Logout User",
         description:
-          "Menghapus session token dari database untuk mengakhiri sesi user",
+          "Mengakhiri sesi pengguna dengan menghapus record token session dari database.",
+        security: [{ bearerAuth: [] }],
+        responses: {
+          200: { description: "Logout berhasil dan session dihapus" },
+          401: { description: "Unauthorized - Token tidak valid" },
+          500: { description: "Internal server error" },
+        },
+      },
+      response: {
+        200: t.Object({
+          data: t.String({ examples: ["OK"] }),
+        }),
+        401: t.Object({
+          error: t.String({ examples: ["Unauthorized"] }),
+        }),
+        500: t.Object({
+          error: t.String({ examples: ["Internal Server Error"] }),
+        }),
       },
     }
   );
